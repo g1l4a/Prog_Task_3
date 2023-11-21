@@ -1,4 +1,5 @@
 import numpy as np
+from prettytable import PrettyTable
 
 
 class UserInput:
@@ -42,6 +43,18 @@ class SolveTransportationProblem:
         self.num_sources = sources
         self.num_destinations = destinations
 
+    def print_input_parameter_table(self):
+
+        table = PrettyTable()
+        table.field_names = [""] + [self.D[j] for j in range(self.num_destinations)]
+        for i, row in enumerate(self.C):
+            table.add_row([self.S[i]] + row.tolist())
+
+        print("\nInput Parameter Table:")
+        print(table)
+    '''
+    Implementation of North-West corner method
+    '''
     def transportation_problem_nw(self):
 
         X = np.zeros((self.num_sources, self.num_destinations))
