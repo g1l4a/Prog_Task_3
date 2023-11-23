@@ -98,7 +98,7 @@ class SolveTransportationProblem:
             if max_row_diff == max_row_diff_idx == max_col_diff == max_col_diff_idx:  # the last cost
                 last = np.where(costs >= 0)
                 i, j = last[0][0], last[1][0]
-            elif max_row_diff > max_col_diff:
+            elif max_row_diff >= max_col_diff:
                 i = max_row_diff_idx
                 j = np.where(costs[i] >= 0)[0][np.argmin(costs[i][costs[i] >= 0])]
             else:
