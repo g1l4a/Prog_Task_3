@@ -151,3 +151,35 @@ class SolveTransportationProblem:
                 differences.append(abs(min2 - min1))
             max_difference_index = np.argmax(differences)
             return differences[max_difference_index], max_difference_index
+
+    def calculate_potentials(self):
+        potential_1 = np.zeros(self.C.shape[0])
+        potential_2 = np.zeros(self.C.shape[1])
+
+        for k in range(self.C.size):
+            non_units = np.argwhere(self.C != 0)
+            for i, j in non_units:
+                if potential_1[i] == 0 and potential_2[j] != 0:
+                    potential_1[i] = self.C[i][j] - potential_2[j]
+                elif potential_2[j] == 0 and potential_1[i] != 0:
+                    potential_2[j] = self.C[i][j] - potential_1[i]
+                else:
+                    continue
+
+        return potential_1, potential_2
+
+    def russell_approximation(self):
+        supply, demand = len(self.S), len(self.D)
+        result = np.zeros((supply, demand))
+        while True:
+            potential_1, potential_2 = self.calculate_potentials()
+            c_prime = self.C - np.outer(potential_1, np.ones(demand)) - np.outer(np.ones(supply), potential_2)
+            nw = self.transportation_problem_nw()
+            if np.array_equal(nw, np.zeros((supply, demand))):
+                break
+            index_1, index_2 = np.unravel_index(np.argmax(nw), nw.shape)
+            res_index = min(self.S[index_1], self.D[index_2])
+            result[index_1][index_2] = res_index
+            self.S[index_1] -= result[index_1][index_2]
+            self.D[index_2] -= result[index_1][index_2]
+        return result
