@@ -37,12 +37,18 @@ class SolveTransportationProblem:
         self.num_sources = sources
         self.num_destinations = destinations
 
+    def is_balanced(self):
+        return sum(self.D) == sum(self.S)
+
+    def is_correct_data(self):
+        return not (np.any(self.D < 0) or np.any(self.S < 0) or np.any(self.C < 0))
+
     def print_input_parameter_table(self):
         table = PrettyTable()
-        table.field_names = [""] + [f"D_{j + 1}" for j in range(len(self.D))]
+        table.field_names = ["Source\Destination"] + [f"{j + 1}" for j in range(len(self.D))]
 
         for i, row in enumerate(self.C):
-            table.add_row([f"S_{i + 1}", *row])
+            table.add_row([f"{i + 1}", *row])
 
         s_values = [f"{self.S[i]}" for i in range(len(self.C))]
         table.add_column("Supply", s_values, align="c")
@@ -89,7 +95,7 @@ class SolveTransportationProblem:
             max_row_diff, max_row_diff_idx = self.get_cost_differences_and_indexes(costs, axis=1)
             max_col_diff, max_col_diff_idx = self.get_cost_differences_and_indexes(costs, axis=0)
 
-            if max_row_diff == max_row_diff_idx == max_col_diff == max_col_diff_idx:    # the last cost
+            if max_row_diff == max_row_diff_idx == max_col_diff == max_col_diff_idx:  # the last cost
                 last = np.where(costs >= 0)
                 i, j = last[0][0], last[1][0]
             elif max_row_diff > max_col_diff:
